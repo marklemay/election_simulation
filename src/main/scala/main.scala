@@ -30,38 +30,6 @@ def instantRunOff(votes: Seq[Seq[Int]]): Int = {
   }
 }
 
-// IDEAL plurality voter strategy
-// project a vote distribution based on underlieng preferences (but self)
-// use the distribution to estimate giving tyemaking/breaking votes
-// calculate teh EV of tyebreaking with preference difference
-
-//can probably simplify some of these assumptions
-
-def StrategicWithPoll(voters: Seq[Seq[Double]], i:Int) : Int = {
-  // poll many pairs of voters to estimate prob of each tye break
-
-  val OtherVoters = voters.zipWithIndex.filter(_._2 != i).map(_._1)
-  val me = voters(i)
-
-  // ideally bump https://github.com/nicolasstucki/multisets to scala 3.
-  var dictionary = List[(Int,Int)]()
-
-  for( _ <- Range(0, 100)) {
-
-    val c1 = TopChoice(OtherVoters(r.between(0, OtherVoters.size)))
-    val c2 = TopChoice(OtherVoters(r.between(0, OtherVoters.size)))
-
-    dictionary = (c1, c2) :: dictionary
-  }
-  dictionary = dictionary.filterNot(_ == _)
-  val res = dictionary.groupBy((x,y) => if(x < y) {(x,y)} else {(y,x)}).map((xx,l) => (xx,l.size))
-  println(res)
-
-  val myProportanateEVParts = res.map( ( xxx , c) => (xxx, c.toDouble * (Math.abs(me(xxx._1)-me(xxx._2)))))
-  println(myProportanateEVParts)
-
-  ???
-}
 
 
 //def strategic()
@@ -100,35 +68,30 @@ def main(): Unit = {
     println((prefBest, best))
 
 
-//    // nieve plurality
-//    {
-//      val votes = voters.map(TopChoice)
-//
-//      println(votes)
-//      val winner = votes.groupBy(identity).view.mapValues(_.size).maxBy(_._2)._1
-//      println(winner)
-//      val preferenceDrop = Math.abs(prefBest - aggregatePreference(winner))
-//      println(preferenceDrop)
-//      aggregatePrefDrop = aggregatePrefDrop + preferenceDrop
-//    }
-//
-//
-//    //    // nieve instant run off
-//    {
-//      val votes = voters.map(_.zipWithIndex.sortBy(_._1).reverse.map(_._2))
-//      println(votes)
-//      val winner = instantRunOff(votes)
-//      val preferenceDrop = Math.abs(prefBest - aggregatePreference(winner))
-//      println(preferenceDrop)
-//      aggregateNieveRunOffPrefDrop = aggregateNieveRunOffPrefDrop + preferenceDrop
-//
-//    }
+    // nieve plurality
+    {
+      val votes = voters.map(TopChoice)
 
-    // sort of stretegic plurality
-      {
-        StrategicWithPoll(voters,0)
+      println(votes)
+      val winner = votes.groupBy(identity).view.mapValues(_.size).maxBy(_._2)._1
+      println(winner)
+      val preferenceDrop = Math.abs(prefBest - aggregatePreference(winner))
+      println(preferenceDrop)
+      aggregatePrefDrop = aggregatePrefDrop + preferenceDrop
+    }
 
-      }
+
+    //    // nieve instant run off
+    {
+      val votes = voters.map(_.zipWithIndex.sortBy(_._1).reverse.map(_._2))
+      println(votes)
+      val winner = instantRunOff(votes)
+      val preferenceDrop = Math.abs(prefBest - aggregatePreference(winner))
+      println(preferenceDrop)
+      aggregateNieveRunOffPrefDrop = aggregateNieveRunOffPrefDrop + preferenceDrop
+
+    }
+
 
 
   }
