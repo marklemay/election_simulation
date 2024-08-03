@@ -12,16 +12,13 @@ trait VotingSys(voters: Int, outcome: Int) {
 
   type Election = List[Ballot]
 
-  lazy val allElections: List[Election]
-
-  // should live elsewhere
   def NextProb(publicProbs: Seq[Map[Ballot, Double]], util: Int => Candidate => Double, probFallOff: Double): Seq[Map[Ballot, Double]] = {
     //println(publicProbs)
     var nextVotes = scala.collection.mutable.Map[Int, Ballot]()
     for (voter <- Range(0, voters)) {
 
       val EVs = scala.collection.mutable.Map[Ballot, Double]().withDefault(_ => 0)
-      for (e <- allElections) {
+      for (e <- allElections()) {
         val myBallot = e(voter)
         val winners = winner(e)
 
@@ -48,6 +45,20 @@ trait VotingSys(voters: Int, outcome: Int) {
     }))
   }
 
+
+  private def allElections(v:Int): LazyList[Election] = {
+    if (v == 0) {
+      LazyList(List())
+    } else {
+      val last = allElections(v - 1)
+      for {b <- allBallots.to(LazyList)
+           rest <- last
+           } yield b :: rest
+    }
+  }
+
+  def allElections(): LazyList[Election] = allElections(voters)
+
 }
 
 
@@ -67,23 +78,6 @@ class Plurality(voters: Int, options :Int) extends VotingSys(voters,options){
 
   lazy val allBallots : List[Ballot] = {
     Range(0,options).toList
-  }
-
-  // Refactor up to VotingSys
-  lazy val allElections : List[Election] = {
-    if(voters==0){
-      List(List())
-    }else{
-      var out = List()
-      for(b <- allBallots){
-        Plurality(voters-1, options).allElections
-
-      }
-      val last = Plurality(voters - 1, options)
-      for {b <- allBallots
-           rest <- last.allElections
-           } yield b :: rest
-    }
   }
 
 }
@@ -144,23 +138,6 @@ class InstantRunOff(voters: Int, options :Int) extends VotingSys(voters,options)
     Range(0,options).toList.permutations.toList
   }
 
-  // Refactor up to VotingSys
-  lazy val allElections : List[Election] = {
-    if(voters==0){
-      List(List())
-    }else{
-      var out = List()
-      for(b <- allBallots){
-        InstantRunOff(voters-1, options).allElections
-
-      }
-      val last = InstantRunOff(voters - 1, options)
-      for {b <- allBallots
-           rest <- last.allElections
-           } yield b :: rest
-    }
-  }
-
 }
 
 // TODO there are many resolution criterai that could be studied: win in 1 round by by least sum of vote positions
@@ -172,8 +149,8 @@ class InstantRunOff(voters: Int, options :Int) extends VotingSys(voters,options)
 @main
 def main3(): Unit = {
 
-  val numVotesr = 6
-  val numOptions = 3
+  val numVotesr = 4
+  val numOptions = 4
 
   val election = InstantRunOff(numVotesr,numOptions)
 
@@ -183,8 +160,8 @@ def main3(): Unit = {
   //println(election.allElections.size)
 
 
-  //val voters = Seq.fill(numVotesr)(Seq.fill(numOptions)(Random.nextDouble()))
-  val voters = List(List(0.8448046022556366, 0.35468166475319185, 0.6227897425995516), List(0.20983807345379102, 0.6405377223702815, 0.6494095953406748), List(0.0015109866494222857, 0.7970935133931731, 0.4001702165080565), List(0.24621471321625188, 0.25779627370523306, 0.7811329970698041), List(0.6385039043271907, 0.9032141404489262, 0.6705143353752466), List(0.9659238381880431, 0.1249433817210781, 0.6819527652117311))
+  val voters = Seq.fill(numVotesr)(Seq.fill(numOptions)(Random.nextDouble()))
+  //val voters = List(List(0.8448046022556366, 0.35468166475319185, 0.6227897425995516), List(0.20983807345379102, 0.6405377223702815, 0.6494095953406748), List(0.0015109866494222857, 0.7970935133931731, 0.4001702165080565), List(0.24621471321625188, 0.25779627370523306, 0.7811329970698041), List(0.6385039043271907, 0.9032141404489262, 0.6705143353752466), List(0.9659238381880431, 0.1249433817210781, 0.6819527652117311))
 
   println(voters)
   //val voters = List(List(0.7155237932298478, 0.9428369677018246, 0.08898937689290554, 0.8456904365593594), List(0.24828963026960715, 0.5283198600998977, 0.8353706206462521, 0.9707476532135482), List(0.2749787467645757, 0.3496408704246007, 0.5120396282998364, 0.09611124094347578), List(0.10163955132484959, 0.23355449919013538, 0.9472414104635279, 0.35386847365191765), List(0.16203065946356054, 0.32913220594685766, 0.2779247637589507, 0.6400427195766016), List(0.957142024648165, 0.6190048364369548, 0.5982902326289554, 0.6822937050104824))
@@ -198,15 +175,15 @@ def main3(): Unit = {
   //  println(Plurality(4,3).winner(List(1,1,2)))
   //  println(Plurality(4,3).allBallots)
   //  println(election.allElections)
-  println(election.allElections.size)
+  //println(election.allElections().size)
 
-  val probFallOff = 0.5
+  val probFallOff = 0.9
   var publicProbs : Seq[Map[election.Ballot, Double]] =  Seq.fill(numVotesr)(election.allBallots.map(b => (b,1.0/election.allBallots.size)).toMap)
 
   println(publicProbs)
 
-  for(_ <- Range(0,100)){
-    publicProbs = election.NextProb(publicProbs,voters,probFallOff)
+  for(i <- Range(1,100)){
+    publicProbs = election.NextProb(publicProbs,voters,(1.0 - 1.0/i.toDouble))
   }
 
 
@@ -236,7 +213,7 @@ def main4(): Unit = {
 //  println(Plurality(4,3).winner(List(1,1,2)))
 //  println(Plurality(4,3).allBallots)
 //  println(election.allElections)
-  println(election.allElections.size)
+  println(election.allElections().size)
 
   val probFallOff = 0.1
   var publicProbs  =  Seq.fill(numVotesr)(Seq.fill(numOptions)(1.0/numOptions).zipWithIndex.map((x,y) => (y,x)).toMap)
