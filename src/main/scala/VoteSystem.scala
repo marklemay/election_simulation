@@ -59,7 +59,7 @@ trait VotingSys(voters: Int, outcome: Int) {
   def allElections(): LazyList[Election] = allElections(voters)
 
   // elections whos outcome will change based on the first vote
-  val pivitalElections: LazyList[List[Ballot]] = {
+  lazy val pivitalElections: LazyList[List[Ballot]] = {
     val possibleRests = allElections(voters - 1)
 
     var out = List[List[Ballot]]()
@@ -157,6 +157,29 @@ class InstantRunOff(voters: Int, options :Int) extends VotingSys(voters,options)
 
 }
 
+
+
+
+class RankBySum(voters: Int, options :Int) extends VotingSys(voters,options){
+
+  // TOOD constain as needed
+  type Candidate = Int
+  type Ballot = List[Candidate]
+
+
+  override def winner(e:Election) : Set[Candidate] ={
+    val dd = e.flatMap(b => b.zipWithIndex.map((candidate, position) => (candidate, options - position))).groupBy((c,_)=> c).map((c, v) => (c, v.map(_._2).sum))
+    val mostVotes = dd.maxBy(_._2)._2
+
+    dd.filter(_._2 == mostVotes).map(_._1).to(Set)
+  }
+
+  lazy val allBallots : List[Ballot] = {
+    Range(0,options).toList.permutations.toList
+  }
+
+}
+
 // TODO there are many resolution criterai that could be studied: win in 1 round by by least sum of vote positions
 // run off with least first place removed, run off with most last place removed, run off with most position count removed
 // requier more then 50% support...
@@ -245,7 +268,6 @@ def main4(): Unit = {
 
 
 
-@main
 def main5(): Unit = {
   val r = new scala.util.Random
 
@@ -264,5 +286,22 @@ def main5(): Unit = {
 }
 
 
+
+
+
+@main
+def main6(): Unit = {
+  val r = new scala.util.Random
+
+  val numVotesr = 3
+  val numOptions = 3
+
+  val election = RankBySum(numVotesr, numOptions)
+
+  election.winner(List(List(0,1,2)))
+}
+
+
+
 //todo investigate rank choice
-//todo: make much more efficeint with pivots
+//todo: make much more efficeint with pivots? probably need to do sumething like the sum of ballots to be scalable
