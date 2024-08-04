@@ -45,7 +45,6 @@ trait VotingSys(voters: Int, outcome: Int) {
     }))
   }
 
-
   private def allElections(v:Int): LazyList[Election] = {
     if (v == 0) {
       LazyList(List())
@@ -58,6 +57,24 @@ trait VotingSys(voters: Int, outcome: Int) {
   }
 
   def allElections(): LazyList[Election] = allElections(voters)
+
+  // elections whos outcome will change based on the first vote
+  val pivitalElections: LazyList[List[Ballot]] = {
+    val possibleRests = allElections(voters - 1)
+
+    var out = List[List[Ballot]]()
+
+    for {rest <- possibleRests}{
+
+
+      val winners = for {b <- allBallots.to(LazyList)} yield winner(b :: rest)
+        if(!winners.forall(_ == winners.head)){
+          out = rest :: out
+        }
+    }
+
+    out.to(LazyList)
+  }
 
 }
 
@@ -146,7 +163,6 @@ class InstantRunOff(voters: Int, options :Int) extends VotingSys(voters,options)
 
 
 
-@main
 def main3(): Unit = {
 
   val numVotesr = 4
@@ -227,6 +243,25 @@ def main4(): Unit = {
 }
 
 
+
+
+@main
+def main5(): Unit = {
+  val r = new scala.util.Random
+
+  val numVotesr = 10
+  val numOptions = 4
+
+  val election = Plurality(numVotesr, numOptions)
+
+  println(election.pivitalElections.size)
+  println(Plurality(numVotesr-1, numOptions).allElections().size)
+
+  for (e <- election.pivitalElections.take(10)){
+    println(e)
+  }
+
+}
 
 
 //todo investigate rank choice
