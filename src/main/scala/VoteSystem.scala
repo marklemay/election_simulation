@@ -1,9 +1,9 @@
 import scala.util.Random
 
 
-trait VotingSys(voters: Int, outcome: Int) {
+trait VotingSys(val voters: Int,val outcome: Int) {
 
-  type Candidate
+  type Candidate = Int
   type Ballot
 
   def winner(e:Election) : Set[Candidate]
@@ -12,8 +12,8 @@ trait VotingSys(voters: Int, outcome: Int) {
 
   type Election = List[Ballot]
 
-  
-  def NextProb(publicProbs: Seq[Map[Ballot, Double]], util: Int => Candidate => Double, probFallOff: Double): Seq[Map[Ballot, Double]] = {
+
+  def NextProb(publicProbs: Seq[Map[Ballot, Double]], util: Int => Candidate => Double, probFallOff: Double): (List[Ballot],Seq[Map[Ballot, Double]]) = {
     //println(publicProbs)
     var nextVotes = scala.collection.mutable.Map[Int, Ballot]()
     for (voter <- Range(0, voters)) {
@@ -40,11 +40,13 @@ trait VotingSys(voters: Int, outcome: Int) {
     }
     println(Range(0, voters).map(nextVotes))
 
-    return publicProbs.zipWithIndex.map((ballotDist, voter) => ballotDist.map((ballot, prob) => if (nextVotes(voter) == ballot) {
+    return (
+      nextVotes.toList.sortBy(_._1).map(_._2)
+    , publicProbs.zipWithIndex.map((ballotDist, voter) => ballotDist.map((ballot, prob) => if (nextVotes(voter) == ballot) {
       (ballot, (1.0 - probFallOff) + probFallOff * prob)
     } else {
       (ballot, probFallOff * prob)
-    }))
+    })))
   }
 
   private def allElections(v:Int): LazyList[Election] = {
@@ -264,7 +266,7 @@ def main3(): Unit = {
   println(publicProbs)
 
   for(i <- Range(1,100)){
-    publicProbs = election.NextProb(publicProbs,voters,(1.0 - 1.0/i.toDouble))
+    publicProbs = election.NextProb(publicProbs,voters,(1.0 - 1.0/i.toDouble))._2
   }
 
 
@@ -302,7 +304,7 @@ def main4(): Unit = {
   println(publicProbs)
 
   for(_ <- Range(0,100)){
-    publicProbs = election.NextProb(publicProbs,voters,probFallOff)
+    publicProbs = election.NextProb(publicProbs,voters,probFallOff)._2
   }
 
 }
@@ -376,7 +378,7 @@ def main7(): Unit = {
   println(publicProbs)
 
   for(i <- Range(1,100)){
-    publicProbs = election.NextProb(publicProbs,voters,(1.0 - 1.0/i.toDouble))
+    publicProbs = election.NextProb(publicProbs,voters,(1.0 - 1.0/i.toDouble))._2
   }
 }
 
@@ -434,7 +436,7 @@ def main9(): Unit = {
   //println(publicProbs)
 
   for(i <- Range(1,100)){
-    publicProbs = election.NextProb(publicProbs,voters,(1.0 - 1.0/i.toDouble))
+    publicProbs = election.NextProb(publicProbs,voters,(1.0 - 1.0/i.toDouble))._2
   }
 }
 

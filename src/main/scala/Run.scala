@@ -1,17 +1,54 @@
 import scala.util.Random
 
-def runsystem(election: Approval, voters: Seq[Seq[Double]]): Unit = {
-  var publicProbs: Seq[Map[List[Boolean], Double]] = Seq.fill(numVotesr)(election.allBallots.map(b => (b, 1.0 / election.allBallots.size)).toMap)
 
-  publicProbs = election.NextProb(publicProbs, voters, .5)
-  //TODO also return next probs and vites
 
-  for (i <- Range(2, 100)) {
-    publicProbs = election.NextProb(publicProbs, voters, (1.0 - 1.0 / i.toDouble))
+
+class SystemCOunter(election: VotingSys){
+
+  var worstHonest :Double = 0.0
+  var averageHonest :Double = 0.0
+
+
+  var worstStrat :Double = 0.0
+  var averageStrat :Double = 0.0
+
+  var counter = 0
+
+
+  def runsystem( voters: Seq[Seq[Double]]): Unit = {
+    var publicProbs: Seq[Map[election.Ballot, Double]] = Seq.fill(election.voters)(election.allBallots.map(b => (b, 1.0 / election.allBallots.size)).toMap)
+
+
+    var aggregatePreference = Range(0, election.outcome).map(i => voters.map(voter => Math.abs(voter(i))).sum)
+
+    println(aggregatePreference)
+    var (prefBest, best) = aggregatePreference.zipWithIndex.minBy(_._1)
+
+
+    val (honestVote, publicProbs1) = election.NextProb(publicProbs, voters, .5)
+
+    println(honestVote)
+
+    println(election.winner(honestVote))
+
+
+
+
+    publicProbs = publicProbs1
+    //TODO also return next probs and vites
+
+//    for (i <- Range(2, 100)) {
+//      publicProbs = election.NextProb(publicProbs, voters, (1.0 - 1.0 / i.toDouble))
+//    }
+
+
   }
 
 
 }
+
+
+
 
 
 @main
@@ -22,7 +59,7 @@ def run(): Unit = {
   val numOptions = 3
 
 
-  val election = Approval(numVotesr,numOptions)
+  val election = Plurality(numVotesr,numOptions)
 
 
 
@@ -36,12 +73,14 @@ def run(): Unit = {
   for (voter <- voters){
     println(voter)
   }
+  val xxx = SystemCOunter(election)
 
 
+  xxx.runsystem(voters)
   //  println(Plurality(4,3).winner(List(1,1,2)))
   //  println(Plurality(4,3).allBallots)
   //  println(election.allElections)
   //println(election.allElections().size)
 
-  runsystem(election, voters)
+  //runsystem(election, voters)
 }
