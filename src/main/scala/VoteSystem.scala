@@ -38,7 +38,7 @@ trait VotingSys(val voters: Int,val outcome: Int) {
       nextVotes(voter) = EVs.maxBy(_._2)._1
       //println(nextVotes)
     }
-    println(Range(0, voters).map(nextVotes))
+    //println(Range(0, voters).map(nextVotes))
 
     return (
       nextVotes.toList.sortBy(_._1).map(_._2)
@@ -126,7 +126,7 @@ class InstantRunOff(voters: Int, options :Int) extends VotingSys(voters,options)
       return win.keySet.toSet
     } else {
 //      println("runn off")
-      val numLeastFirstVotes = firstVotes.minBy(_._2)._2
+      val numLeastFirstVotes = firstVotes.minBy(_._2)._2 // TODO need to count with no votes
 //      println(numLeastFirstVotes)
       val candidatesToRemovw = firstVotes.filter(_._2 == numLeastFirstVotes).keys.toList
 //      println(candidatesToRemovw)
