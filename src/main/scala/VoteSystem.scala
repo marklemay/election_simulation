@@ -111,13 +111,17 @@ class InstantRunOff(voters: Int, options :Int) extends VotingSys(voters,options)
   type Ballot = List[Candidate]
 
 
-  def winnerHelper(e: List[List[Candidate]]): Set[Candidate] = {
+  def winnerHelper(e: List[List[Candidate]], candidaates: Set[Candidate] ): Set[Candidate] = {
     if(e(0).size==0){
       return Set()
     }
 
-    val firstVotes = e.groupBy(x => x(0)).mapValues(v => v.size)
-//    println("firstvotes")
+    val firstVotes1 = e.groupBy(x => x(0)).mapValues(v => v.size)
+
+//and 0 to the others
+    val firstVotes = candidaates.map(c => (c,firstVotes1.getOrElse(c,0))).toMap
+
+    //    println("firstvotes")
 //    println(firstVotes.toList)
     val win = firstVotes.filter(_._2 > voters.toDouble / 2.0)
 //    println(win.toList)
@@ -126,7 +130,7 @@ class InstantRunOff(voters: Int, options :Int) extends VotingSys(voters,options)
       return win.keySet.toSet
     } else {
 //      println("runn off")
-      val numLeastFirstVotes = firstVotes.minBy(_._2)._2 // TODO need to count with no votes
+      val numLeastFirstVotes = firstVotes.minBy(_._2)._2
 //      println(numLeastFirstVotes)
       val candidatesToRemovw = firstVotes.filter(_._2 == numLeastFirstVotes).keys.toList
 //      println(candidatesToRemovw)
@@ -135,7 +139,7 @@ class InstantRunOff(voters: Int, options :Int) extends VotingSys(voters,options)
 //      println("new ballot")
 //      println(runnoff)
 
-      val res = winnerHelper(runnoff)
+      val res = winnerHelper(runnoff, candidaates -- candidatesToRemovw)
       if(res.size>0){
         return res
       }else{
@@ -152,7 +156,7 @@ class InstantRunOff(voters: Int, options :Int) extends VotingSys(voters,options)
 
 
   override def winner(e:Election) : Set[Candidate] ={
-    winnerHelper(e)
+    winnerHelper(e, Range(0,options).toSet)
   }
 
   lazy val allBallots : List[Ballot] = {
@@ -397,8 +401,6 @@ def main8(): Unit = {
   println(election.winner(List(List(true, true, false),List(true, false, false))))
 }
 
-
-@main
 def main9(): Unit = {
   val r = new scala.util.Random
 
@@ -443,6 +445,17 @@ def main9(): Unit = {
 //val numVotesr = 6 //val numOptions = 3
 //val numVotesr = 4 //val numOptions = 4
 
+
+
+@main
+def main10(): Unit = {
+
+  val numVotesr = 6
+  val numOptions = 3
+  val election = InstantRunOff(numVotesr,numOptions)
+
+  println(election.winner(List(List(0, 1, 2), List(2, 0, 1), List(0, 1, 2), List(0, 1, 2), List(2, 1, 0), List(2, 1, 0))))
+}
 
 //todo investigate rank choice
 //todo: make much more efficeint with pivots? probably need to do sumething like the sum of ballots to be scalable
