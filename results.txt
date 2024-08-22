@@ -1,8 +1,8 @@
-1425
-Plurality            ave. unneeded compromize per voter(honest)=0.02175273572974592 , ave. unneeded compromize per voter(strategic)=0.020261374199596567, ave. strat votes=0.1285647498831222
-InstantRunOff        ave. unneeded compromize per voter(honest)=0.02441935191609079 , ave. unneeded compromize per voter(strategic)=0.019954307931030795, ave. strat votes=0.10121552127162228
-RankBySum            ave. unneeded compromize per voter(honest)=0.012591498832080026, ave. unneeded compromize per voter(strategic)=0.013933894247573856, ave. strat votes=0.3376577840112204
-Approval             ave. unneeded compromize per voter(honest)=0.014375459429863053, ave. unneeded compromize per voter(strategic)=0.018763874145804174, ave. strat votes=0.271037868162693
+1865
+Plurality            ave. unneeded compromize per voter(honest)=0.021715677500366133, ave. unneeded compromize per voter(strategic)=0.020283258123718232, ave. strat votes=0.12817077527688298
+InstantRunOff        ave. unneeded compromize per voter(honest)=0.024772457464649032, ave. unneeded compromize per voter(strategic)=0.02028113995851537 , ave. strat votes=0.10280457306180739
+RankBySum            ave. unneeded compromize per voter(honest)=0.012585776236329125, ave. unneeded compromize per voter(strategic)=0.013974561263260186, ave. strat votes=0.3428010003572706
+Approval             ave. unneeded compromize per voter(honest)=0.014169041386660272, ave. unneeded compromize per voter(strategic)=0.018388152439028034, ave. strat votes=0.26902465166130796
 
 
 
