@@ -1,14 +1,6 @@
-2393
-Plurality            ave. unneeded compromize per voter(honest)=0.022278446871342505, ave. unneeded compromize per voter(strategic)=0.019962069514843205, ave. strat votes=0.12907268170426028
-InstantRunOff        ave. unneeded compromize per voter(honest)=0.025112707741096436, ave. unneeded compromize per voter(strategic)=0.01981881408967485 , ave. strat votes=0.10254803675856232
-RankBySum            ave. unneeded compromize per voter(honest)=0.013123577913568628, ave. unneeded compromize per voter(strategic)=0.01397445160336575 , ave. strat votes=0.3450292397660815
-Approval             ave. unneeded compromize per voter(honest)=0.013929397308525443, ave. unneeded compromize per voter(strategic)=0.017981710510905392, ave. strat votes=0.2703982177666386
-
-
-
-
-1103
-Plurality            ave. unneeded compromize per voter(honest)=0.02363385578432295 , ave. unneeded compromize per voter(strategic)=0.020885862911560926, ave. strat votes=0.13164251207729524 
-InstantRunOff (bad)  ave. unneeded compromize per voter(honest)=0.04083693384108222 , ave. unneeded compromize per voter(strategic)=0.023549173828482303, ave. strat votes=0.35809178743961373
-RankBySum            ave. unneeded compromize per voter(honest)=0.013669076676610051, ave. unneeded compromize per voter(strategic)=0.013801029765361104, ave. strat votes=0.3437499999999998  
-Approval             ave. unneeded compromize per voter(honest)=0.015106571440056926, ave. unneeded compromize per voter(strategic)=0.018986576182939117, ave. strat votes=0.26841787439613507 
+from 1 runs
+Plurality            ave. unneeded compromise per voter(honest)=0.03429, ave. unneeded compromise per voter(strategic)=0.03429, ave. strat votes=0.00000ave. unneeded compromise per voter(strategic)=0.01714, ave. strat votes=0.08333
+InstantRunOff        ave. unneeded compromise per voter(honest)=0.01714, ave. unneeded compromise per voter(strategic)=0.00000, ave. strat votes=0.33333ave. unneeded compromise per voter(strategic)=0.00000, ave. strat votes=0.33333
+RankBySum            ave. unneeded compromise per voter(honest)=0.01714, ave. unneeded compromise per voter(strategic)=0.00000, ave. strat votes=0.25000ave. unneeded compromise per voter(strategic)=0.03429, ave. strat votes=0.25000
+InstantRunOffReomveLeastSum ave. unneeded compromise per voter(honest)=0.01714, ave. unneeded compromise per voter(strategic)=0.03429, ave. strat votes=0.25000ave. unneeded compromise per voter(strategic)=0.03429, ave. strat votes=0.25000
+Approval             ave. unneeded compromise per voter(honest)=0.00000, ave. unneeded compromise per voter(strategic)=0.00000, ave. strat votes=0.16667ave. unneeded compromise per voter(strategic)=0.00000, ave. strat votes=0.16667

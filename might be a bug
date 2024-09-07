@@ -34,3 +34,50 @@ winner 	Set(2) 	List(0, 1, 2, 2, 1, 2)
 winner 	Set(2) 	List(0, 1, 2, 2, 1, 2)
 winner 	Set(2) 	List(0, 1, 2, 2, 1, 2)
 winner 	Set(2) 	List(0, 1, 2, 2, 1, 2)
+
+
+
+
+
+
+
+
+
+
+
+
+List(List(0.23861492390477257, 0.7557099560411891, 0.5526612461125991), List(0.7183914057687649, 0.5457858923483404, 0.7762975733664365), List(0.027293474392597217, 0.6543303190475835, 0.3097334841830871), List(0.03785966945051655, 0.6417701979713946, 0.08318875218745347), List(0.3686260580807158, 0.0049054166881237204, 0.8395650218931852), List(0.1187125100199321, 0.5094987649460597, 0.31528666802343186))
+List(0.23861492390477257, 0.7557099560411891, 0.5526612461125991)
+List(0.7183914057687649, 0.5457858923483404, 0.7762975733664365)
+List(0.027293474392597217, 0.6543303190475835, 0.3097334841830871)
+List(0.03785966945051655, 0.6417701979713946, 0.08318875218745347)
+List(0.3686260580807158, 0.0049054166881237204, 0.8395650218931852)
+List(0.1187125100199321, 0.5094987649460597, 0.31528666802343186)
+Vector(1.5094980416172992, 3.112000547042691, 2.8767327457661933)
+bestValuePerVoter0.5186667578404485, honesrValuePerVoter 0.5186667578404485, stretigicValuePerVoter 0.5186667578404485, diffBallots 0.0
+Vector(1.5094980416172992, 3.112000547042691, 2.8767327457661933)
+best 1
+winner 	Set(1) 	List(List(1, 2, 0), List(2, 0, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(2, 0, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))
+winner 	Set(1) 	List(List(1, 2, 0), List(0, 2, 1), List(1, 2, 0), List(1, 2, 0), List(2, 0, 1), List(1, 2, 0))

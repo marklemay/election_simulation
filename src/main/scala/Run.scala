@@ -1,3 +1,4 @@
+import java.io.{File, FileWriter}
 import scala.util.Random
 
 
@@ -8,7 +9,13 @@ class SystemCOunter(election: VotingSys){
 
 
   var bestValuePerVoter :Double = 0.0
+
   var honesrValuePerVoter :Double = 0.0
+
+
+  var mildStretigicValuePerVoter :Double = 0.0
+  var mildDiffBallotsPerVoter :Double = 0.0
+
   var stretigicValuePerVoter :Double = 0.0
   var diffBallotsPerVoter :Double = 0.0
 
@@ -17,9 +24,13 @@ class SystemCOunter(election: VotingSys){
   var counter = 0
 
 
-  def info() = f"${election.getClass.getName}%-20s ave. unneeded compromize per voter(honest)=${(bestValuePerVoter-honesrValuePerVoter)/counter.toDouble}%-20s, ave. unneeded compromize per voter(strategic)=${(bestValuePerVoter-stretigicValuePerVoter)/counter.toDouble}%-20s, ave. strat votes=${diffBallotsPerVoter/counter.toDouble}%-20s"
+  def info() = f"${election.getClass.getName}%-30s ave. unneeded compromise per voter(honest)=${(bestValuePerVoter-honesrValuePerVoter)/counter.toDouble}%1.5f, " ++
+    f"ave. unneeded compromise per voter(mild strategic)=${(bestValuePerVoter-mildStretigicValuePerVoter)/counter.toDouble}%1.5f, ave. strat votes=${mildDiffBallotsPerVoter/counter.toDouble}%1.5f, " ++
+    f"ave. unneeded compromise per voter(hard strategic)=${(bestValuePerVoter-stretigicValuePerVoter)/counter.toDouble}%1.5f, ave. strat votes=${diffBallotsPerVoter/counter.toDouble}%1.5f"
 
   def runsystem( voters: Seq[Seq[Double]]): Unit = {
+
+
     var publicProbs: Seq[Map[election.Ballot, Double]] = Seq.fill(election.voters)(election.allBallots.map(b => (b, 1.0 / election.allBallots.size)).toMap)
 
 
@@ -32,8 +43,9 @@ class SystemCOunter(election: VotingSys){
     val (honestVote, publicProbs1) = election.NextProb(publicProbs, voters, .5)
 
 
+    println(s"##  ${election.getClass.getName}")
     println(s"best $best ")
-    println(s"winner \t${election.winner(honestVote)} \t$honestVote ")
+    println(f"winner \t${election.winner(honestVote)}%-20s \t${honestVote.map(_.toString.padTo(30,' ')).mkString("\t")} ?")
 
 
     var finalVote = honestVote
@@ -42,12 +54,28 @@ class SystemCOunter(election: VotingSys){
     publicProbs = publicProbs1
     //TODO also return next probs and vites
 
-    for (i <- Range(2, 25)) {
+    for (i <- Range(2, 7)) {
       var (finalVote1, publicProbs1) = election.NextProb(publicProbs, voters, (1.0 - 1.0 / i.toDouble))
 
-      println(s"winner \t${election.winner(finalVote1)} \t$finalVote1 ")
+      println(f"winner \t${election.winner(finalVote1)}%-20s \t${finalVote1.map(_.toString.padTo(30,' ')).mkString("\t")}")
 
       finalVote= finalVote1
+      publicProbs = publicProbs1
+    }
+
+
+    val mildstretigicWinner =  election.winner(finalVote)
+    val mildstretigicValuePerVoter = mildstretigicWinner.map(i => voters.map(voter => voter(i)).sum/mildstretigicWinner.size.toDouble).sum/ voters.size.toDouble
+    val milddiffBallots = honestVote.zip(finalVote).map((honest, strategic) => if(honest == strategic) {0}else {1}).sum.toDouble/ voters.size.toDouble
+
+
+    // exelerate
+    for (i <- Range(7, 20)) {
+      var (finalVote1, publicProbs1) = election.NextProb(publicProbs, voters, (1.0 - 1.0 / 7.0))
+
+      println(f"winner \t${election.winner(finalVote1)}%-20s \t${finalVote1.map(_.toString.padTo(30,' ')).mkString("\t")} +")
+
+      finalVote = finalVote1
       publicProbs = publicProbs1
     }
 
@@ -66,6 +94,10 @@ class SystemCOunter(election: VotingSys){
 
     this.bestValuePerVoter+= prefBest / voters.size.toDouble
     this.honesrValuePerVoter += honesrValuePerVoter
+
+    this.mildStretigicValuePerVoter += mildstretigicValuePerVoter
+    this.mildDiffBallotsPerVoter += milddiffBallots
+
     this.stretigicValuePerVoter += stretigicValuePerVoter
     this.diffBallotsPerVoter += diffBallots
     counter += 1
@@ -92,6 +124,7 @@ def run(): Unit = {
   val xxx = List(SystemCOunter(Plurality(numVotesr,numOptions)),
     SystemCOunter(InstantRunOff(numVotesr,numOptions)),
       SystemCOunter(RankBySum(numVotesr,numOptions)),
+    SystemCOunter(InstantRunOffReomveLeastSum(numVotesr,numOptions)),
     SystemCOunter(Approval(numVotesr,numOptions))
   )
 
@@ -110,8 +143,16 @@ def run(): Unit = {
 
     xxx.map(_.runsystem(voters))
 
+    val fileWriter = new FileWriter(new File("results.txt"))
     println(i)
     xxx.map(x => println(x.info()))
+
+    fileWriter.write(s"from $i runs\n")
+    //TODO what is the averege unneeded compromise between candidate 2nd best cadidate, 3rd best,...
+
+    xxx.map(x => fileWriter.write(x.info() ++ "\n"))
+    fileWriter.close();
+
 
     //  println(Plurality(4,3).winner(List(1,1,2)))
     //  println(Plurality(4,3).allBallots)
