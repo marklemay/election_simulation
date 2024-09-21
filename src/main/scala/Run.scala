@@ -114,8 +114,8 @@ class SystemCOunter(election: VotingSys){
 def run(): Unit = {
   val r = new Random
 
-  val numVotesr = 4
-  val numOptions = 4
+  val numVotesr = 6
+  val numOptions = 3
 
   val runs = 10000
 
