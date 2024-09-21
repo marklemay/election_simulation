@@ -10,7 +10,10 @@ trait VotingSys(val voters: Int,val outcome: Int) {
 
   lazy val allBallots : List[Ballot]
 
+
+  // TODO remove type ailias?
   type Election = List[Ballot]
+
 
 
   def NextProb(publicProbs: Seq[Map[Ballot, Double]], util: Int => Candidate => Double, probFallOff: Double): (List[Ballot],Seq[Map[Ballot, Double]]) = {
@@ -49,6 +52,9 @@ trait VotingSys(val voters: Int,val outcome: Int) {
     })))
   }
 
+
+
+
   private def allElections(v:Int): LazyList[Election] = {
     if (v == 0) {
       LazyList(List())
@@ -62,23 +68,47 @@ trait VotingSys(val voters: Int,val outcome: Int) {
 
   def allElections(): LazyList[Election] = allElections(voters)
 
-  // elections whos outcome will change based on the first vote
-  lazy val pivitalElections: LazyList[List[Ballot]] = {
-    val possibleRests = allElections(voters - 1)
 
-    var out = List[List[Ballot]]()
+  type Tally = Map[Ballot,Int]
 
-    for {rest <- possibleRests}{
+  def winner(e:Tally) : Set[Candidate] = winner( e.toList.flatMap((b,v) => List.fill(v)(b)))
+  // intelijj bad type infrenece on winner
 
 
-      val winners = for {b <- allBallots.to(LazyList)} yield winner(b :: rest)
-        if(!winners.forall(_ == winners.head)){
-          out = rest :: out
-        }
-    }
 
-    out.to(LazyList)
+// TODO faster memize
+  private def allTally(cs:List[Ballot], sum:Int): IndexedSeq[Tally] = {
+     cs match {
+       case List(b)  => IndexedSeq(Map(cs.head -> sum))
+       case b:: otherBallots => for {votes <- Range(0, sum+1)
+         rest <- allTally(otherBallots, sum - votes )
+                             } yield rest + (b -> votes)
+     }
   }
+
+  lazy val allTally: IndexedSeq[Tally] = allTally(allBallots, voters)
+
+/// all tallies (voters-1), where the next voter can change the outcome
+  lazy val allPivotalSubTally: IndexedSeq[Tally] = allTally(allBallots, voters-1).filter(t => allBallots.map(b => winner(t+( b -> (t(b)+1))) ).toSet.size>1)
+
+
+  // elections whos outcome will change based on the first vote
+//  lazy val pivitalElections: LazyList[List[Ballot]] = {
+//    val possibleRests = allElections(voters - 1)
+//
+//    var out = List[List[Ballot]]()
+//
+//    for {rest <- possibleRests}{
+//
+//
+//      val winners = for {b <- allBallots.to(LazyList)} yield winner(b :: rest)
+//        if(!winners.forall(_ == winners.head)){
+//          out = rest :: out
+//        }
+//    }
+//
+//    out.to(LazyList)
+//  }
 
 }
 
@@ -110,6 +140,27 @@ class InstantRunOff(voters: Int, options :Int) extends VotingSys(voters,options)
   type Candidate = Int
   type Ballot = List[Candidate]
 
+// when the number of candidates is nearly eaqual yto the number of voters, pidgeon hole effects happen.  this will keep trying to break ties.
+  def removeCandidate(e: List[List[Candidate]], candidaates: Set[Candidate], depth : Int): Set[Candidate] = {
+
+    if(e(0).size<= depth){
+      candidaates
+    }else{
+      val counts = e.map(_(depth) ).groupBy(c => c).map((c,l) => (c,l.size))
+
+      val fullCounts = candidaates.map(c => (c, counts.getOrElse(c,0))).toMap
+
+      val minCount = fullCounts.minBy(_._2)._2
+
+      val next = fullCounts.filter((c, counts) => counts == minCount).keys.toSet
+
+      if(next.size ==1){
+        next
+      }else{
+        removeCandidate(e,next,depth+1)
+      }
+    }
+  }
 
   def winnerHelper(e: List[List[Candidate]], candidaates: Set[Candidate] ): Set[Candidate] = {
     if(e(0).size==0){
@@ -339,60 +390,10 @@ def main3(): Unit = {
 
 
 
-def main4(): Unit = {
-  val r = new scala.util.Random
-
-  val numVotesr = 8
-  val numOptions = 5
-
-  val election = Plurality(numVotesr,numOptions)
-
-
-  val voters = Seq.fill(numVotesr)(Seq.fill(numOptions)(Random.nextDouble()))
-  //println(voters)
-  //val voters = List(List(0.7155237932298478, 0.9428369677018246, 0.08898937689290554, 0.8456904365593594), List(0.24828963026960715, 0.5283198600998977, 0.8353706206462521, 0.9707476532135482), List(0.2749787467645757, 0.3496408704246007, 0.5120396282998364, 0.09611124094347578), List(0.10163955132484959, 0.23355449919013538, 0.9472414104635279, 0.35386847365191765), List(0.16203065946356054, 0.32913220594685766, 0.2779247637589507, 0.6400427195766016), List(0.957142024648165, 0.6190048364369548, 0.5982902326289554, 0.6822937050104824))
-  //List(List(0.7998139911563363, 0.9598790204037694, 0.7196849436076475, 0.8395395520553166), List(0.3731212406517461, 0.7600402313526347, 0.6967361000439918, 0.7251618413781908), List(0.7938171573565171, 0.416444545785444, 0.4470620972177066, 0.8898349187957365), List(0.5479007196890486, 0.56824061708372, 0.4640401073079, 0.693134700258453), List(0.6173016871988352, 0.7971275188267796, 0.28454446586209137, 0.7954702695918969), List(0.694592941977278, 0.5234305999674427, 0.7183346762458745, 0.1646795724906459))
-
-  for (voter <- voters){
-    println(voter)
-  }
-
-
-//  println(Plurality(4,3).winner(List(1,1,2)))
-//  println(Plurality(4,3).allBallots)
-//  println(election.allElections)
-  println(election.allElections().size)
-
-  val probFallOff = 0.1
-  var publicProbs  =  Seq.fill(numVotesr)(Seq.fill(numOptions)(1.0/numOptions).zipWithIndex.map((x,y) => (y,x)).toMap)
-
-  println(publicProbs)
-
-  for(_ <- Range(0,100)){
-    publicProbs = election.NextProb(publicProbs,voters,probFallOff)._2
-  }
-
-}
 
 
 
 
-def main5(): Unit = {
-  val r = new scala.util.Random
-
-  val numVotesr = 10
-  val numOptions = 4
-
-  val election = Plurality(numVotesr, numOptions)
-
-  println(election.pivitalElections.size)
-  println(Plurality(numVotesr-1, numOptions).allElections().size)
-
-  for (e <- election.pivitalElections.take(10)){
-    println(e)
-  }
-
-}
 
 def main6(): Unit = {
   val r = new scala.util.Random
@@ -508,7 +509,6 @@ def main9(): Unit = {
 
 
 
-@main
 def main10(): Unit = {
 
   val numVotesr = 6
@@ -517,6 +517,42 @@ def main10(): Unit = {
 
   println(election.winner(List(List(0, 1, 2), List(2, 0, 1), List(0, 1, 2), List(0, 1, 2), List(2, 1, 0), List(2, 1, 0))))
 }
+
+
+
+def main11(): Unit = {
+
+  val numVoter = 20
+  val numOptions = 3
+  val election = Plurality(numVotesr,numOptions)
+
+  println(election.allTally)
+  println(election.allPivotalSubTally)
+}
+
+
+@main
+def main54545(): Unit = {
+
+  val numVoter = 4
+  val numOptions = 4
+  val election = InstantRunOff(numVotesr,numOptions)
+
+  val votesr = List(
+    List(0,1,2,3),
+    List(1,2,0,3),
+    List(2,3,0,1),
+    List(3,0,2,1),
+  )
+
+  println(election.removeCandidate(votesr,Set(0,1,2,3),0))
+
+}
+
+
+
+
+
 
 //todo investigate rank choice
 //todo: make much more efficeint with pivots? probably need to do sumething like the sum of ballots to be scalable
