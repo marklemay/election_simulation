@@ -1,3 +1,4 @@
+
 import scala.util.Random
 
 
@@ -5,14 +6,15 @@ import scala.util.Random
 def main12(): Unit = {
 
   println("???")
-  val numVotesr = 4
-  val numOptions = 3
-  val election = Plurality(numVotesr,numOptions)
+  val numVotesr = 3
+  val numOptions = 5
+//  val election = Plurality(numVotesr,numOptions)
+  val election = InstantRunOff(numVotesr,numOptions)
 
   println(election.allPivotalSubTally.size)
 
-  //val voters = Seq.fill(numVotesr)(Seq.fill(numOptions)(Random.nextDouble()))
-  val voters = List(List(0.9598846282508307, 0.0442994812994405, 0.8173809006531977), List(0.2593282713077234, 0.995328335687889, 0.9040670911685706), List(0.3921522689485478, 0.8019699578489333, 0.7751359979241987), List(0.09358012355234258, 0.03794660888318724, 0.9242094400600395))
+  val voters = Seq.fill(numVotesr)(Seq.fill(numOptions)(Random.nextDouble()))
+  //val voters = List(List(0.9598846282508307, 0.0442994812994405, 0.8173809006531977), List(0.2593282713077234, 0.995328335687889, 0.9040670911685706), List(0.3921522689485478, 0.8019699578489333, 0.7751359979241987), List(0.09358012355234258, 0.03794660888318724, 0.9242094400600395))
 
 
   println(voters)
@@ -27,36 +29,54 @@ def main12(): Unit = {
 
   // TODO  // TODO  // TODO  // TODO  // TODO  // TODO  // TODO
   // bug here need to not coulnt own prior votes or will be too conservative
-  var seen = election.allBallots
+//  var seen = election.allBallots
+  var prev : scala.collection.mutable.Map[Int,List[election.Ballot]] = scala.collection.mutable.Map[Int,List[election.Ballot]]()
+
+  for{v<- Range(0,numVotesr)}{
+    prev(v)= election.allBallots.toList
+  }
 
 
   var nextVotes = scala.collection.mutable.Map[Int, election.Ballot]()
 
-  for (step <- Range(0,1000)){
+  for (step <- Range(0,100)){
   //println(publicProbs)
-  val probBallot = election.allBallots.map(b=> (b, seen.count(_ == b).toDouble/ seen.size.toDouble)).toMap
+
+//    // problematically less acurite
+//    val seen = (prev.toMap).toList.flatMap((_, l) => l).groupBy(x => x).map((b, l) => (b, l.size)) //.collect()//.flatten.groupBy((v,b) => ???)
+//    val seencount = seen.values.sum
+//    val probBallot = election.allBallots.map(b => (b, seen.getOrElse(b,0).toDouble / seencount.toDouble)).toMap
 
   for ((voter,i) <- voters.zipWithIndex){
+val seenbutMe = (prev.toMap - i).toList.flatMap((_,l) => l).groupBy(x => x).map((b,l) => (b,l.size))//.collect()//.flatten.groupBy((v,b) => ???)
+    val seenbutMecount = seenbutMe.values.sum
+
+    val probBallot = election.allBallots.map(b => (b, seenbutMe.getOrElse(b,0).toDouble / seenbutMecount.toDouble)).toMap
+
     //println(i)
     val PivitalEVs = scala.collection.mutable.Map[election.Ballot, Double]().withDefault(_ => 0)
     for (sistuation <- election.allPivotalSubTally) {
-      // TODO can cache
+      // TODO can cache?
       val prob = sistuation.map((b,v) => scala.math.pow(probBallot(b),v)).product
 
       for (b <- election.allBallots) {
 
-        val winners = election.winner(sistuation+ (b -> (sistuation(b)+1)))
+        val winners = election.winnerFast(sistuation+ (b -> (sistuation(b)+1)))
 
         PivitalEVs(b) += prob * winners.map(voter).sum/winners.size
         //voter(b)
       }
     }
-    println(election.allBallots.map(PivitalEVs))
+    //Wprintln(election.allBallots.map(PivitalEVs))
 
     nextVotes(i) = PivitalEVs.maxBy(_._2)._1
 
   }
-    seen = seen ++ nextVotes.map((_,x)=> x)
+    for((v,b) <- nextVotes){
+      prev(v) = prev(v) ++ List(b)
+    }
+
+
   println(Range(0, voters.size).map(nextVotes))
     //println(s"                   $seen")
   }

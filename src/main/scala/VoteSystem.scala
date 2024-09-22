@@ -78,6 +78,15 @@ trait VotingSys(val voters: Int, val outcome: Int) {
   def winner(e: Tally): Set[Candidate] = winner(e.toList.flatMap((b, v) => List.fill(v)(b)))
   // intelijj bad type infrenece on winner
 
+  // TODO something cleaner?
+  private val winnerCache2 = scala.collection.mutable.Map[Tally, Set[Candidate]]()
+  def winnerFast(e: Tally): Set[Candidate] = {
+    winnerCache2.getOrElseUpdate(e,winner(e))
+  }
+
+
+
+
 
   // TODO faster memize
   private def allTally(cs: List[Ballot], sum: Int): IndexedSeq[Tally] = {
@@ -207,6 +216,9 @@ class InstantRunOff(voters: Int, options: Int) extends VotingSys(voters, options
   override def winner(e: Election): Set[Candidate] = {
     winnerHelper(e, Range(0, options).toSet)
   }
+
+
+
 
   lazy val allBallots: List[Ballot] = {
     Range(0, options).toList.permutations.toList
