@@ -86,10 +86,10 @@ def scratch2(): Unit = {
 
   var nextVotes = scala.collection.mutable.Map[Int, Ballot]()
 
-  for (voter <- Range(0, numVotesr)) {
+  // cache will be pretty meh when there is not much prior
+  val resultsCache = scala.collection.mutable.Map[election.Tally, Set[Candidate]]()
 
-    // TODO unlcear exactly what is best to cache, winners (for everybody?, EVs, ...)
-    val resultsCache = scala.collection.mutable.Map[election.Tally, Double]()
+  for (voter <- Range(0, numVotesr)) {
 
     val EVs = scala.collection.mutable.Map[Ballot, Double]().withDefault(_ => 0)
     val otherSamplers = samplers.take(voter) ++ samplers.drop(voter + 1)
@@ -101,18 +101,21 @@ def scratch2(): Unit = {
       // possibly could be faster with inlined loops
       val subTally = otherVotes.groupBy(x=>x).map((b,ls) => (b, ls.size)).withDefault(_ => 0)
 
+      // TOOD cahce on subtally to just skip when the ellection is non-pivital
+
       for (myBallot <- election.allBallots) {
         val tally = subTally + (myBallot -> (subTally(myBallot) + 1))
 
-        val EV = resultsCache.getOrElseUpdate(tally,{
-          val winners =election.winner(tally)
-          winners.map(voters(voter)).sum / winners.size
-        }) // TODO: speed up
+        val winners = resultsCache.getOrElseUpdate(tally,election.winner(tally))
 
+
+        val EV = winners.map(voters(voter)).sum / winners.size
         EVs(myBallot) += EV
       }
     }
 
+    println()
+    println(resultsCache.size)
     println(EVs)
     nextVotes(voter) = EVs.maxBy(_._2)._1
     println(nextVotes(voter))
