@@ -5,32 +5,30 @@ import scala.util.Random
 // This was from before I though through the asomtotics
 
 
-
-
 //TOOD could be made extreamely faster!
 // coulc sample form int and precompute efficient bit maskins, or at least a tree
-sealed class Sampler[A](dist: Map[A,Double]){
-  val impl : List[(Double, A)] = {
+sealed class Sampler[A](dist: Map[A, Double]) {
+  val impl: List[(Double, A)] = {
 
     // least likely things near 0.0 for better floating point resolutoin
     val relative = dist.toList.sortBy(_._2)
     var temp = 0.0
 
-    var out = List[(Double, A)] ()
+    var out = List[(Double, A)]()
 
-    for(i <- Range(0, dist.size)){
-      val (a,d) = relative(i)
-      out ++= List((d+temp,a))
-      temp+= d
+    for (i <- Range(0, dist.size)) {
+      val (a, d) = relative(i)
+      out ++= List((d + temp, a))
+      temp += d
 
     }
     out
   }
 
-  def sample(d : Double): A = {
+  def sample(d: Double): A = {
 
-    for((s,a)<- impl){
-      if(d<s){
+    for ((s, a) <- impl) {
+      if (d < s) {
         return a
       }
     }
@@ -46,10 +44,10 @@ def sampleTest(): Unit = {
   val numVotesr = 3
   val numOptions = 5
   //  val election = Plurality(numVotesr,numOptions)
-  val election = InstantRunOff(numVotesr,numOptions)
+  val election = InstantRunOff(numVotesr, numOptions)
 
 
-  val s = Sampler(Map(.01 -> 'a', .1 -> 'b', .89 -> 'c'))
+  val s = Sampler(Map(.01 -> 'a',.1 -> 'b',.89 -> 'c'))
 
   println(s.sample(0.0))
   println(s.sample(0.001))
@@ -71,13 +69,13 @@ def scratch2(): Unit = {
   val samplesPerStep = 1000
 
   //  val election = Plurality(numVotesr,numOptions)
-  val election = InstantRunOff(numVotesr,numOptions)
+  val election = InstantRunOff(numVotesr, numOptions)
 
 
   val voters = Seq.fill(numVotesr)(Seq.fill(numOptions)(Random.nextDouble()))
 
   println(voters)
-  for (voter <- voters){
+  for (voter <- voters) {
     println(voter)
   }
 
@@ -88,20 +86,29 @@ def scratch2(): Unit = {
 
   var nextVotes = scala.collection.mutable.Map[Int, Ballot]()
 
-
   for (voter <- Range(0, numVotesr)) {
 
+    // TODO unlcear exactly what is best to cache, winners (for everybody?, EVs, ...)
+    val resultsCache = scala.collection.mutable.Map[election.Tally, Double]()
+
     val EVs = scala.collection.mutable.Map[Ballot, Double]().withDefault(_ => 0)
+    val otherSamplers = samplers.take(voter) ++ samplers.drop(voter + 1)
 
     for (_ <- Range(0, samplesPerStep)) {
 
-      val votes = samplers.map(_.sample(r.nextDouble())).toArray
+      val otherVotes = otherSamplers.map(_.sample(r.nextDouble()))
+
+      // possibly could be faster with inlined loops
+      val subTally = otherVotes.groupBy(x=>x).map((b,ls) => (b, ls.size)).withDefault(_ => 0)
 
       for (myBallot <- election.allBallots) {
-        votes(voter) = myBallot
-        val winners = election.winner(votes.toList) // TODO: speed up
+        val tally = subTally + (myBallot -> (subTally(myBallot) + 1))
 
-        val EV = winners.map(voters(voter)).sum / winners.size
+        val EV = resultsCache.getOrElseUpdate(tally,{
+          val winners =election.winner(tally)
+          winners.map(voters(voter)).sum / winners.size
+        }) // TODO: speed up
+
         EVs(myBallot) += EV
       }
     }
@@ -110,9 +117,6 @@ def scratch2(): Unit = {
     nextVotes(voter) = EVs.maxBy(_._2)._1
     println(nextVotes(voter))
   }
-
-
-
 
 
 }
