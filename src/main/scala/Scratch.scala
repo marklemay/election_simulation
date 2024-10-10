@@ -1,6 +1,8 @@
 
 import scala.util.Random
 
+// This was from before I though through the asomtotics
+
 
 @main
 def main12(): Unit = {
