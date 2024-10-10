@@ -1,12 +1,15 @@
 import scala.util.Random
 
 
+// TODO break into smaller files
+
 trait VotingSys(val voters: Int, val outcome: Int) {
 
   type Candidate = Int
   type Ballot
 
   def winner(e: Election): Set[Candidate]
+
 
   // TODO something cleaner?
   private val winnerCache = scala.collection.mutable.Map[Election, Set[Candidate]]()
@@ -17,7 +20,7 @@ trait VotingSys(val voters: Int, val outcome: Int) {
   lazy val allBallots: List[Ballot]
 
 
-  // TODO remove type ailias?
+  // TODO remove type ailias? better as Seq[Ballot]
   type Election = List[Ballot]
 
 
