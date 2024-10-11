@@ -58,18 +58,17 @@ def sampleTest(): Unit = {
 
 }
 
-
 @main
 def scratch2(): Unit = {
 
 
   println("???")
-  val numVotesr = 16
-  val numOptions = 6
-  val samplesPerStep = 1000
+  val numVotesr = 8
+  val numOptions = 5
+  val samplesPerStep = 100000
 
   //  val election = Plurality(numVotesr,numOptions)
-  val election = InstantRunOff(numVotesr, numOptions)
+  val election = Approval(numVotesr, numOptions)
 
 
   val voters = Seq.fill(numVotesr)(Seq.fill(numOptions)(Random.nextDouble()))
@@ -86,28 +85,18 @@ def scratch2(): Unit = {
 
   var nextVotes = scala.collection.mutable.Map[Int, Ballot]()
 
-  // cache will be pretty meh when there is not much prior
-  val resultsCache = scala.collection.mutable.Map[election.Tally, Set[Candidate]]()
 
   for (voter <- Range(0, numVotesr)) {
 
     val EVs = scala.collection.mutable.Map[Ballot, Double]().withDefault(_ => 0)
-    val otherSamplers = samplers.take(voter) ++ samplers.drop(voter + 1)
 
     for (_ <- Range(0, samplesPerStep)) {
 
-      val otherVotes = otherSamplers.map(_.sample(r.nextDouble()))
-
-      // possibly could be faster with inlined loops
-      val subTally = otherVotes.groupBy(x=>x).map((b,ls) => (b, ls.size)).withDefault(_ => 0)
-
-      // TOOD cahce on subtally to just skip when the ellection is non-pivital
+      val votes = samplers.map(_.sample(r.nextDouble())).toArray
 
       for (myBallot <- election.allBallots) {
-        val tally = subTally + (myBallot -> (subTally(myBallot) + 1))
-
-        val winners = resultsCache.getOrElseUpdate(tally,election.winner(tally))
-
+        votes(voter) = myBallot
+        val winners = election.winner(votes.toList) // TODO: speed up
 
         val EV = winners.map(voters(voter)).sum / winners.size
         EVs(myBallot) += EV
@@ -115,11 +104,38 @@ def scratch2(): Unit = {
     }
 
     println()
-    println(resultsCache.size)
     println(EVs)
     nextVotes(voter) = EVs.maxBy(_._2)._1
     println(nextVotes(voter))
+
+    val n = voters(voter).zipWithIndex.map(_.swap).toMap
+    val correctAns = election.nieve(n)
+    if(correctAns != nextVotes(voter)){
+      println(correctAns)
+      println("!!!!")
+    }
+
+
   }
 
+
+}
+
+def scratch21(): Unit = {
+
+
+  println("???")
+  val numVotesr = 8
+  val numOptions = 5
+  val samplesPerStep = 2000
+
+  //  val election = Plurality(numVotesr,numOptions)
+  val election = Approval(numVotesr, numOptions)
+
+
+
+    val n = List(0.9963499552159691, 0.30602026639544544, 0.8175255738424995, 0.5032050573305196, 0.3403952909287561).zipWithIndex.map(_.swap).toMap
+    val correctAns = election.nieve(n)
+      println(correctAns)
 
 }

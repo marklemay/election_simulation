@@ -10,6 +10,11 @@ trait VotingSys(val voters: Int, val outcome: Int) {
 
   def winner(e: Election): Set[Candidate]
 
+  def nieve(e: Map[Candidate,Double]): Ballot
+  def estimatedNievePrefference(b :Ballot): Map[Candidate,Double] = ???
+
+
+
 
   // TODO something cleaner?
   private val winnerCache = scala.collection.mutable.Map[Election, Set[Candidate]]()
@@ -146,6 +151,8 @@ class Plurality(voters: Int, options: Int) extends VotingSys(voters, options) {
     Range(0, options).toList
   }
 
+  override def nieve(e: Map[Candidate,Double]): Ballot = e.maxBy(_._2)._1
+
 }
 
 
@@ -154,6 +161,10 @@ class InstantRunOff(voters: Int, options: Int) extends VotingSys(voters, options
   // TOOD constain as needed
   type Candidate = Int
   type Ballot = List[Candidate]
+
+
+  override def nieve(e: Map[Candidate,Double]): Ballot = e.toList.sortBy(- _._2).map(_._1)
+  override def estimatedNievePrefference(b :Ballot): Map[Candidate,Double] = b.map(c => (c,(options - c).toDouble/(options+1).toDouble )).toMap
 
   // when the number of candidates is nearly eaqual yto the number of voters, pidgeon hole effects happen.  this will keep trying to break ties.
   def removeCandidate(e: List[List[Candidate]], candidaates: Set[Candidate], depth: Int): Set[Candidate] = {
@@ -236,6 +247,8 @@ class RankBySum(voters: Int, options: Int) extends VotingSys(voters, options) {
   type Candidate = Int
   type Ballot = List[Candidate]
 
+  override def nieve(e: Map[Candidate,Double]): Ballot = e.toList.sortBy(- _._2).map(_._1)
+  override def estimatedNievePrefference(b :Ballot): Map[Candidate,Double] = b.map(c => (c,(options - c).toDouble/(options+1).toDouble )).toMap
 
   override def winner(e: Election): Set[Candidate] = {
     val dd = e.flatMap(b => b.zipWithIndex.map((candidate, position) => (candidate, options - position - 1))).groupBy((c, _) => c).map((c, v) => (c, v.map(_._2).sum))
@@ -257,6 +270,8 @@ class InstantRunOffReomveLeastSum(voters: Int, options: Int) extends VotingSys(v
   type Candidate = Int
   type Ballot = List[Candidate]
 
+  override def nieve(e: Map[Candidate,Double]): Ballot = e.toList.sortBy(- _._2).map(_._1)
+  override def estimatedNievePrefference(b :Ballot): Map[Candidate,Double] = b.map(c => (c,(options - c).toDouble/(options+1).toDouble )).toMap
 
   def winnerHelper(e: List[List[Candidate]], candidaates: Set[Candidate], sum: Map[Candidate, Int]): Set[Candidate] = {
     if (e(0).size == 0) {
@@ -319,6 +334,15 @@ class Approval(voters: Int, options: Int) extends VotingSys(voters, options) {
   type Candidate = Int
   type Ballot = List[Boolean]
 
+  override def nieve(e: Map[Candidate,Double]): Ballot = {
+
+    val max = e.maxBy(_._2)._2
+    val min = e.minBy(_._2)._2
+    val mid = (max-min)/2.0
+
+    Range(0,options).map(c => e(c) > mid).toList
+    // TODO: the above seems wrong
+  }
 
   override def winner(e: Election): Set[Candidate] = {
     val dd = e.map(_.zipWithIndex.filter((v, c) => v)).flatten.groupBy(_._2).map((c, l) => (c, l.size))
