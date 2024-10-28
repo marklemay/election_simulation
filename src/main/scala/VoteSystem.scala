@@ -336,12 +336,10 @@ class Approval(voters: Int, options: Int) extends VotingSys(voters, options) {
 
   override def nieve(e: Map[Candidate,Double]): Ballot = {
 
-    val max = e.maxBy(_._2)._2
-    val min = e.minBy(_._2)._2
-    val mid = (max-min)/2.0
+    // assume any tie is equally likely
+    e.map((_,ev) => ???)
 
-    Range(0,options).map(c => e(c) > mid).toList
-    // TODO: the above seems wrong
+    ???
   }
 
   override def winner(e: Election): Set[Candidate] = {
