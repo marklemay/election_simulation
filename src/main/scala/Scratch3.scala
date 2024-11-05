@@ -9,7 +9,7 @@ def scratch3(): Unit = {
   println("???")
   val numVotesr = 8
   val numOptions = 5
-  val samples = 100000
+  val samples = 1000000
 
   val election = Approval(numVotesr, numOptions)
 
@@ -24,6 +24,7 @@ var record  = Map[Ballot,List[Seq[Double]]]().withDefault(_ => List())
 
   for (_ <- Range(0, samples)) {
     val voter = Seq.fill(numOptions)(Random.nextDouble())
+      .sortBy(x => x) //TODO remove
 
     val res = election.nieve(voter.zipWithIndex.map(_.swap).toMap)
 

@@ -12,7 +12,6 @@ class SystemCOunter(election: VotingSys){
 
   var honesrValuePerVoter :Double = 0.0
 
-
   var mildStretigicValuePerVoter :Double = 0.0
   var mildDiffBallotsPerVoter :Double = 0.0
 
@@ -20,18 +19,20 @@ class SystemCOunter(election: VotingSys){
   var diffBallotsPerVoter :Double = 0.0
 
 
+  var nieveprefdiff :Double = 0.0
+
 
   var counter = 0
 
 
-  def info() = f"${election.getClass.getName}%-30s ave. unneeded compromise per voter(honest)=${(bestValuePerVoter-honesrValuePerVoter)/counter.toDouble}%1.5f, " ++
+  def info() = f"${election.getClass.getName}%-30s ave. unneeded compromise per voter(honest)=${(bestValuePerVoter-honesrValuePerVoter)/counter.toDouble}%1.5f, dif in estimatedptref= ${nieveprefdiff/counter.toDouble}%1.5f," ++
     f"ave. unneeded compromise per voter(mild strategic)=${(bestValuePerVoter-mildStretigicValuePerVoter)/counter.toDouble}%1.5f, ave. strat votes=${mildDiffBallotsPerVoter/counter.toDouble}%1.5f, " ++
     f"ave. unneeded compromise per voter(hard strategic)=${(bestValuePerVoter-stretigicValuePerVoter)/counter.toDouble}%1.5f, ave. strat votes=${diffBallotsPerVoter/counter.toDouble}%1.5f"
 
   def runsystem( voters: Seq[Seq[Double]]): Unit = {
 
 
-    var publicProbs: Seq[Map[election.Ballot, Double]] = Seq.fill(election.voters)(election.allBallots.map(b => (b, 1.0 / election.allBallots.size)).toMap)
+    var publicProbs = Seq.fill(election.voters)(Sampler(election.allBallots.map(b => (b, 1.0 / election.allBallots.size)).toMap))
 
 
     var aggregatePreference = Range(0, election.outcome).map(i => voters.map(voter => voter(i)).sum)
@@ -40,7 +41,7 @@ class SystemCOunter(election: VotingSys){
     var (prefBest, best) = aggregatePreference.zipWithIndex.maxBy(_._1)
 
 
-    val (honestVote, publicProbs1) = election.NextProb(publicProbs, voters, .5)
+    val (honestVote, publicProbs1) = election.NextProbBySmaple(publicProbs, voters, .5)
 
 
     println(s"##  ${election.getClass.getName}")
@@ -55,7 +56,7 @@ class SystemCOunter(election: VotingSys){
     //TODO also return next probs and vites
 
     for (i <- Range(2, 7)) {
-      var (finalVote1, publicProbs1) = election.NextProb(publicProbs, voters, (1.0 - 1.0 / i.toDouble))
+      var (finalVote1, publicProbs1) = election.NextProbBySmaple(publicProbs, voters, (1.0 - 1.0 / i.toDouble))
 
       println(f"winner \t${election.winner(finalVote1)}%-20s \t${finalVote1.map(_.toString.padTo(30,' ')).mkString("\t")}")
 
@@ -71,7 +72,7 @@ class SystemCOunter(election: VotingSys){
 
     // exelerate
     for (i <- Range(7, 20)) {
-      var (finalVote1, publicProbs1) = election.NextProb(publicProbs, voters, (1.0 - 1.0 / 7.0))
+      var (finalVote1, publicProbs1) = election.NextProbBySmaple(publicProbs, voters, (1.0 - 1.0 / 7.0))
 
       println(f"winner \t${election.winner(finalVote1)}%-20s \t${finalVote1.map(_.toString.padTo(30,' ')).mkString("\t")} +")
 
@@ -92,6 +93,7 @@ class SystemCOunter(election: VotingSys){
 
     println(s"bestValuePerVoter${prefBest / voters.size.toDouble}, honesrValuePerVoter $honesrValuePerVoter, stretigicValuePerVoter $stretigicValuePerVoter, diffBallots $diffBallots" )
 
+
     this.bestValuePerVoter+= prefBest / voters.size.toDouble
     this.honesrValuePerVoter += honesrValuePerVoter
 
@@ -100,6 +102,19 @@ class SystemCOunter(election: VotingSys){
 
     this.stretigicValuePerVoter += stretigicValuePerVoter
     this.diffBallotsPerVoter += diffBallots
+
+
+//    val estimatedHonestPref = Range(0,election.option).map(v => honestVote.map(election.estimatedNievePrefference))
+//    val estimatedHonestPrefDiff = Range(0, election.outcome).map(i => Math.abs(voters.map(voter => voter(i)).sum - estimatedHonestPref(i)) ).sum
+
+    this.nieveprefdiff += 0 //estimatedHonestPrefDiff / voters.size.toDouble
+//    estimatedHonestPref
+
+
+
+
+
+
     counter += 1
   }
 
@@ -114,8 +129,8 @@ class SystemCOunter(election: VotingSys){
 def run(): Unit = {
   val r = new Random
 
-  val numVotesr = 4
-  val numOptions = 4
+  val numVotesr = 8
+  val numOptions = 5
 
   val runs = 10000
 

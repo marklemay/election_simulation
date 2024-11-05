@@ -10,6 +10,7 @@ trait VotingSys(val voters: Int, val outcome: Int) {
 
   def winner(e: Election): Set[Candidate]
 
+  // TODO:  these were imlemented as guestimates should be checked thoughly
   def nieve(e: Map[Candidate,Double]): Ballot
   def estimatedNievePrefference(b :Ballot): Map[Candidate,Double] = ???
 
@@ -29,7 +30,7 @@ trait VotingSys(val voters: Int, val outcome: Int) {
   type Election = List[Ballot]
 
 
-
+// calculate the next votes and probablities afeter checking every permutation
   def NextProb(publicProbs: Seq[Map[Ballot, Double]], util: Int => Candidate => Double, probFallOff: Double): (List[Ballot], Seq[Map[Ballot, Double]]) = {
     //println(publicProbs)
     var nextVotes = scala.collection.mutable.Map[Int, Ballot]()
@@ -59,12 +60,68 @@ trait VotingSys(val voters: Int, val outcome: Int) {
 
     return (
       nextVotes.toList.sortBy(_._1).map(_._2)
-      , publicProbs.zipWithIndex.map((ballotDist, voter) => ballotDist.map((ballot, prob) => if (nextVotes(voter) == ballot) {
+      ,
+      publicProbs.zipWithIndex.map((ballotDist, voter) => ballotDist.map((ballot, prob) => if (nextVotes(voter) == ballot) {
       (ballot, (1.0 - probFallOff) + probFallOff * prob)
     } else {
       (ballot, probFallOff * prob)
     })))
   }
+
+
+
+  def NextProbBySmaple(samplers: Seq[Sampler[Ballot]], util: Int => Candidate => Double, probFallOff: Double): (List[Ballot], Seq[Sampler[Ballot]]) = {
+    val samplesPerStep = 1000
+
+
+    //println(publicProbs)
+    var nextVotes = scala.collection.mutable.Map[Int, Ballot]()
+
+
+    for (voter <- Range(0, voters)) {
+
+      val EVs = scala.collection.mutable.Map[Ballot, Double]().withDefault(_ => 0)
+
+      for (_ <- Range(0, samplesPerStep)) {
+
+//        import scala.reflect.ClassTag
+//        val aa = scala.collection.mutable.ArrayBuffer[Int]()
+//        aa(4)=2
+
+        //given b = ClassTag[Ballot]
+//        import scala.collection.mutable.ArrayBuffer
+        val votes = samplers.map(_.sample(r.nextDouble())).toBuffer //samplers.map(_.sample(r.nextDouble())).to//.toArray[Object] // :!  //List// TODO Array
+
+        for (myBallot <- allBallots) {
+          votes(voter) = myBallot
+          val winners = winner(votes.toList)// TODO: speed up
+
+          val EV = winners.map(util(voter)).sum / winners.size
+          EVs(myBallot) += EV
+        }
+      }
+
+      nextVotes(voter) = EVs.maxBy(_._2)._1
+    }
+
+    val nextSamplers = samplers.zipWithIndex.map((s, voter) => Sampler(s.dist.map((ballot, prob) => if (nextVotes(voter) == ballot) {
+                    (ballot, (1.0 - probFallOff) + probFallOff * prob)
+                  } else {
+                    (ballot, probFallOff * prob)
+                  }))
+    )
+
+
+
+    return (
+      nextVotes.toList.sortBy(_._1).map(_._2)
+      ,
+      nextSamplers
+    )
+  }
+
+
+
 
 
   private def allElections(v: Int): LazyList[Election] = {
@@ -152,7 +209,14 @@ class Plurality(voters: Int, options: Int) extends VotingSys(voters, options) {
   }
 
   override def nieve(e: Map[Candidate,Double]): Ballot = e.maxBy(_._2)._1
+  override def estimatedNievePrefference(b :Ballot): Map[Candidate,Double] = {
+    if(options!=5){
+      throw new IllegalArgumentException("only have numbers for 5.")
+    }
 
+    // some experimental #s
+    Range(0, options).map(c => (c, if(c==b){0.83333333333}else{0.41666666666})).toMap
+  }
 }
 
 
@@ -337,10 +401,43 @@ class Approval(voters: Int, options: Int) extends VotingSys(voters, options) {
   override def nieve(e: Map[Candidate,Double]): Ballot = {
 
     // assume any tie is equally likely
-    e.map((_,ev) => ???)
+    val evs = e.mapValues(ev => e.map((_,otherEv) => ev-otherEv).sum>0)
 
-    ???
+    Range(0,options).map(evs).toList
   }
+
+
+  override def estimatedNievePrefference(b :Ballot): Map[Candidate,Double] = {
+    if(options!=5){
+      throw new IllegalArgumentException("only have numbers for 5.")
+    }
+
+    // some experimental #s
+    b.map(b => if(b){1}else{0}).sum match{
+      case 0 => Range(0,options).map(c => (c,.5)).toMap
+
+      case 1 => Range(0,options).map(c => (c, if b(c) then
+        0.8327115173744898
+      else
+        0.2673426528)).toMap
+      case 2 => Range(0,options).map(c => (c, if b(c) then
+        0.7394293906
+      else
+        0.2812090379)).toMap
+      case 3 => Range(0,options).map(c => (c, if b(c) then
+        0.719187245
+      else
+        0.2608026176)).toMap
+      case 4 => Range(0,options).map(c => (c, if b(c) then
+        0.7336428696
+      else
+        0.16659938508364666)).toMap
+
+      case 5 => Range(0,options).map(c => (c,.5)).toMap
+    }
+  }
+
+
 
   override def winner(e: Election): Set[Candidate] = {
     val dd = e.map(_.zipWithIndex.filter((v, c) => v)).flatten.groupBy(_._2).map((c, l) => (c, l.size))

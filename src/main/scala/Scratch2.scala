@@ -7,7 +7,7 @@ import scala.util.Random
 
 //TOOD could be made extreamely faster!
 // coulc sample form int and precompute efficient bit maskins, or at least a tree
-sealed class Sampler[A](dist: Map[A, Double]) {
+sealed class Sampler[A](val dist: Map[A, Double]) {
   val impl: List[(Double, A)] = {
 
     // least likely things near 0.0 for better floating point resolutoin
@@ -65,13 +65,15 @@ def scratch2(): Unit = {
   println("???")
   val numVotesr = 8
   val numOptions = 5
-  val samplesPerStep = 100000
+  val samplesPerStep = 5000
 
   //  val election = Plurality(numVotesr,numOptions)
   val election = Approval(numVotesr, numOptions)
 
 
-  val voters = Seq.fill(numVotesr)(Seq.fill(numOptions)(Random.nextDouble()))
+  val voters = Seq.fill(numVotesr)(Seq.fill(numOptions)(Random.nextDouble())
+//    .sortBy(x => x) //TODO remove
+  )
 
   println(voters)
   for (voter <- voters) {
@@ -81,7 +83,7 @@ def scratch2(): Unit = {
 
   import election.{Ballot, Candidate}
 
-  val samplers = Seq.fill(election.voters)(Sampler(election.allBallots.map(b => (b, 1.0 / election.allBallots.size)).toMap))
+  val samplers : Seq[Sampler[Ballot]] = Seq.fill(election.voters)(Sampler(election.allBallots.map(b => (b, 1.0 / election.allBallots.size)).toMap))
 
   var nextVotes = scala.collection.mutable.Map[Int, Ballot]()
 
@@ -92,7 +94,7 @@ def scratch2(): Unit = {
 
     for (_ <- Range(0, samplesPerStep)) {
 
-      val votes = samplers.map(_.sample(r.nextDouble())).toArray
+      val votes : Array[Ballot] = samplers.map(_.sample(r.nextDouble())).toArray
 
       for (myBallot <- election.allBallots) {
         votes(voter) = myBallot

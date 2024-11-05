@@ -1,0 +1,24 @@
+sortec prefferences
+
+List(false, true, true, true, true) => Vector(0.16659938508364666, 0.653572379756084, 0.6952886112063551, 0.7511800283542587, 0.8345304591268388)
+List(false, true, true, true, false) => List()
+List(false, true, true, false, true) => List()
+List(false, true, true, false, false) => List()
+List(false, true, false, true, true) => List()
+List(false, true, false, true, false) => List()
+List(false, true, false, false, true) => List()
+List(false, true, false, false, false) => List()
+List(false, false, true, true, true) => Vector(0.16668459767236227, 0.3549206375122817, 0.6140134160563225, 0.7099139973493522, 0.8336343215252418)
+List(false, false, true, true, false) => List()
+List(false, false, true, false, true) => List()
+List(false, false, true, false, false) => List()
+List(false, false, false, true, true) => Vector(0.16664299366420357, 0.2905291564390109, 0.3864549637373445, 0.6454596801135988, 0.8333991010501548)
+List(false, false, false, true, false) => List()
+List(false, false, false, false, true) => Vector(0.16688462971562845, 0.24993670030376647, 0.30549189561423046, 0.34705738567406175, 0.8327115173744898)
+
+balenced
+
+List(false, false, false, false, true) => Vector(0.2673426528,0.2673426528,0.2673426528,0.2673426528, 0.8327115173744898)
+List(false, false, false, true, true) => Vector(0.2812090379,0.2812090379,0.2812090379, 0.7394293906, 0.7394293906)
+List(false, false, true, true, true) => Vector(0.2608026176,0.2608026176, 0.719187245,0.719187245,0.719187245)
+List(false, true, true, true, true) => Vector(0.16659938508364666, 0.7336428696,0.7336428696,0.7336428696,0.7336428696)
