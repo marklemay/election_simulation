@@ -2,11 +2,11 @@
 voter=8, candidates=5
 
 from 198 runs
-Plurality                      ave. unneeded compromise per voter(honest)=0.04063, dif in estimatedptref= 0.00000,ave. unneeded compromise per voter(mild strategic)=0.02805, ave. strat votes=0.32035, ave. unneeded compromise per voter(hard strategic)=0.02916, ave. strat votes=0.34108
-InstantRunOff                  ave. unneeded compromise per voter(honest)=0.02903, dif in estimatedptref= 0.00000,ave. unneeded compromise per voter(mild strategic)=0.02193, ave. strat votes=0.77136, ave. unneeded compromise per voter(hard strategic)=0.02459, ave. strat votes=0.85616
-RankBySum                      ave. unneeded compromise per voter(honest)=0.01326, dif in estimatedptref= 0.00000,ave. unneeded compromise per voter(mild strategic)=0.01671, ave. strat votes=0.84548, ave. unneeded compromise per voter(hard strategic)=0.01633, ave. strat votes=0.87814
-InstantRunOffReomveLeastSum    ave. unneeded compromise per voter(honest)=0.01327, dif in estimatedptref= 0.00000,ave. unneeded compromise per voter(mild strategic)=0.01672, ave. strat votes=0.86683, ave. unneeded compromise per voter(hard strategic)=0.01910, ave. strat votes=0.90955
-Approval                       ave. unneeded compromise per voter(honest)=0.01942, dif in estimatedptref= 0.00000,ave. unneeded compromise per voter(mild strategic)=0.01979, ave. strat votes=0.43342, ave. unneeded compromise per voter(hard strategic)=0.01659, ave. strat votes=0.52198
+Plurality                      ave. unneeded compromise per voter(honest)=0.04063,ave. unneeded compromise per voter(mild strategic)=0.02805, ave. strat votes=0.32035, ave. unneeded compromise per voter(hard strategic)=0.02916, ave. strat votes=0.34108
+InstantRunOff                  ave. unneeded compromise per voter(honest)=0.02903,ave. unneeded compromise per voter(mild strategic)=0.02193, ave. strat votes=0.77136, ave. unneeded compromise per voter(hard strategic)=0.02459, ave. strat votes=0.85616
+RankBySum                      ave. unneeded compromise per voter(honest)=0.01326,ave. unneeded compromise per voter(mild strategic)=0.01671, ave. strat votes=0.84548, ave. unneeded compromise per voter(hard strategic)=0.01633, ave. strat votes=0.87814
+InstantRunOffReomveLeastSum    ave. unneeded compromise per voter(honest)=0.01327,ave. unneeded compromise per voter(mild strategic)=0.01672, ave. strat votes=0.86683, ave. unneeded compromise per voter(hard strategic)=0.01910, ave. strat votes=0.90955
+Approval                       ave. unneeded compromise per voter(honest)=0.01942,ave. unneeded compromise per voter(mild strategic)=0.01979, ave. strat votes=0.43342, ave. unneeded compromise per voter(hard strategic)=0.01659, ave. strat votes=0.52198
 
 
 
