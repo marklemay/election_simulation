@@ -1,8 +1,26 @@
 package prob
 
 
+object Dist {
+  def Uniform[A](as: Set[A]): Dist[A] = Dist(as.map(a => (a, 1.0/as.size)).toMap)
+
+  def FromCount[A](as: Map[A, Int]): Dist[A] = {
+    val total = as.values.sum.toDouble
+    Dist(as.map((a,c) => (a, c.toDouble/total)))
+  }
+
+  def Normalize[A](as: Map[A, Double]): Dist[A]  = {
+    val total = as.values.sum
+    Dist(as.map((a,c) => (a, c/total)))
+  }
+}
+
+
 // TODO can be much faster
 class Dist [A](val dist: Map[A, Double]) {
+
+  override def toString():String = dist.mkString(",")
+
   val impl: List[(Double, A)] = {
 
     // least likely things near 0.0 for better floating point resolutoin

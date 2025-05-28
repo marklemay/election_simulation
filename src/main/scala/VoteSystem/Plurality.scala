@@ -1,5 +1,0 @@
-package VoteSystem
-
-class Plurality {
-
-}
