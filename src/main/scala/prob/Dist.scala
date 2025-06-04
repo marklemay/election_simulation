@@ -19,7 +19,7 @@ object Dist {
 // TODO can be much faster
 class Dist [A](val dist: Map[A, Double]) {
 
-  override def toString():String = dist.mkString(",")
+  override def toString:String = dist.mkString(",")
 
   val impl: List[(Double, A)] = {
 
@@ -47,4 +47,9 @@ class Dist [A](val dist: Map[A, Double]) {
     }
     return impl.last._2
   }
+  
+  def apply(a:A): Double = dist.getOrElse(a,0.0)
+  
+  
+  
 }

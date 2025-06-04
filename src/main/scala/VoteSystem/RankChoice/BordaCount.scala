@@ -4,7 +4,7 @@ import VoteSystem.{VoteSystem, VoteSystemFancy}
 import prob.Dist
 
 
-class BordaCount(override val NunCandidates: Int)  extends RankChoice, VoteSystemFancy, VoteSystem(NunCandidates)  {
+class BordaCount(override val NunCandidates: Int) extends RankChoice, VoteSystemFancy, VoteSystem(NunCandidates)  {
 
   type Aggregate = Map[Candidate, Int]
 

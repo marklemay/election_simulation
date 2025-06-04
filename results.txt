@@ -1,6 +1,4 @@
-from 513 runs
-Plurality                      ave. unneeded compromise per voter(honest)=0.03917, dif in estimatedptref= 0.00000,ave. unneeded compromise per voter(mild strategic)=0.02645, ave. strat votes=0.32393, ave. unneeded compromise per voter(hard strategic)=0.02731, ave. strat votes=0.34922
-InstantRunOff                  ave. unneeded compromise per voter(honest)=0.02902, dif in estimatedptref= 0.00000,ave. unneeded compromise per voter(mild strategic)=0.02069, ave. strat votes=0.77991, ave. unneeded compromise per voter(hard strategic)=0.02395, ave. strat votes=0.85749
-RankBySum                      ave. unneeded compromise per voter(honest)=0.01117, dif in estimatedptref= 0.00000,ave. unneeded compromise per voter(mild strategic)=0.01584, ave. strat votes=0.83925, ave. unneeded compromise per voter(hard strategic)=0.01810, ave. strat votes=0.86868
-InstantRunOffReomveLeastSum    ave. unneeded compromise per voter(honest)=0.01231, dif in estimatedptref= 0.00000,ave. unneeded compromise per voter(mild strategic)=0.01551, ave. strat votes=0.85968, ave. unneeded compromise per voter(hard strategic)=0.01642, ave. strat votes=0.90175
-Approval                       ave. unneeded compromise per voter(honest)=0.01808, dif in estimatedptref= 0.00000,ave. unneeded compromise per voter(mild strategic)=0.01871, ave. strat votes=0.43288, ave. unneeded compromise per voter(hard strategic)=0.01738, ave. strat votes=0.53113
+from 1987 runs
+VoteSystem.RankChoice.OptimalGameTheory   0.6282244746241501                       0.011952399835950303                     0.006935954641658538
+VoteSystem.RankChoice.InstantRunoffVoting 0.5944539903880172                       0.013497296046164878                     0.007576395045510421                    
+VoteSystem.RankChoice.BordaCount          0.5894307784723258                       0.013590199224975875                     0.007669714688231398

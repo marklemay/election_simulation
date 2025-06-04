@@ -7,7 +7,7 @@ import prob.Dist
 class Parity(override val NunCandidates: Int)  extends VoteSystemFancy , VoteSystem(NunCandidates)  {
   type Ballot = Int
 
-  lazy val allBallots: List[Ballot] = candidates.toList
+  lazy val allBallots: Set[Ballot] = candidates.toSet
 
   type Aggregate = Map[Ballot, Int]
 

@@ -8,7 +8,7 @@ class Plurality(override val NunCandidates: Int)  extends VoteSystemFancy, VoteS
 
   type Ballot = Int
 
-  lazy val allBallots: List[Ballot] = candidates.toList
+  lazy val allBallots: Set[Ballot] = candidates.toSet
 
   type Aggregate = Map[Ballot, Int]
 

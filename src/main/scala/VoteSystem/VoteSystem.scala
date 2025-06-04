@@ -15,7 +15,7 @@ trait VoteSystem(val NunCandidates: Int) {
   val candidates: Seq[Candidate] = Range(0, NunCandidates)
   type Ballot
 
-  lazy val allBallots: Seq[Ballot]
+  lazy val allBallots: Set[Ballot]
 
   // TODO remove type ailias? better as Seq[Ballot]
   type Election = List[Ballot]
@@ -35,7 +35,7 @@ trait VoteSystemRestricted[NunCandidates <: Int](using
   override val candidates: Seq[Candidate] = Range(0, NunCandidates)
   type Ballot
 
-  lazy val allBallots: List[Ballot]
+  lazy val allBallots: Set[Ballot]
 
   // TODO remove type ailias? better as Seq[Ballot]
   type Election = List[Ballot]
@@ -56,6 +56,11 @@ trait VoteSystemFancy extends VoteSystem {
 
   override def winner(e: Election): Dist[Candidate] = winner(aggregate(e))
 }
+
+trait VoteSystemWithClarity extends VoteSystem {
+  def estimatedNievePrefference(b: Ballot): Map[Candidate, Double]
+}
+
 
 
 

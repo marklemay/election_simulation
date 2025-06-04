@@ -8,7 +8,7 @@ class Random(override val NunCandidates: Int)  extends VoteSystemFancy, VoteSyst
 
   type Ballot = Unit
 
-  lazy val allBallots: List[Ballot] = List(())
+  lazy val allBallots: Set[Ballot] = Set(())
 
   type Aggregate = Unit
 

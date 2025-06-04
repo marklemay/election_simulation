@@ -15,7 +15,7 @@ class Star[NunCandidates <: Int]
   type Ballot = Map[Candidate, Int]
 
 
-  override lazy val allBallots: Seq[Map[Candidate, Int]] = {
+  override lazy val allBallots: Set[Map[Candidate, Int]] = {
     ???
   }
 
