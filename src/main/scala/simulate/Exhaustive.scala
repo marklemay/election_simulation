@@ -16,7 +16,7 @@ trait QualityMeasure {
 
 // consider each voter
 class Exhaustive(val election: VoteSystemWithClarity,
-                 numVoters : Int
+                 numVoters: Int
                 ) {
 
   import election._
@@ -53,7 +53,7 @@ class Exhaustive(val election: VoteSystemWithClarity,
   }
 
 
-  val datas =scala.collection.mutable.ListBuffer.empty[Seq[Double]]
+  val datas = scala.collection.mutable.ListBuffer.empty[Seq[Double]]
 
   class Run(voters: Seq[Seq[Double]]) {
 
@@ -124,7 +124,7 @@ class Exhaustive(val election: VoteSystemWithClarity,
       var finalVote = honestVote
 
 
-      def data() : Seq[Double] ={
+      def data(): Seq[Double] = {
         val w = election.winner(finalVote)
 
         val regretPerVoter = (aggregatePreference(best) - w.dist.map((c, p) => aggregatePreference(c) * p).sum) / voters.size.toDouble
@@ -136,17 +136,19 @@ class Exhaustive(val election: VoteSystemWithClarity,
         val estimateAggregatedPreference = election.candidates.map(c => estimatedPreference.map(_(c)).sum)
         val clarity = (election.candidates.map(c => scala.math.pow((aggregatePreference(c) - estimateAggregatedPreference(c)) / voters.size.toDouble, 2) / candidates.size.toDouble).sum) // div num candidates?
 
-Seq(curtanty,regretPerVoter, clarity)
+        Seq(curtanty, regretPerVoter, clarity)
       }
 
       def summery(): String = {
         val w = election.winner(finalVote)
 
-        val agg = if(election.isInstanceOf[VoteSystemFancy]){
+        val agg = if (election.isInstanceOf[VoteSystemFancy]) {
           election.asInstanceOf[VoteSystemFancy].aggregate(finalVote.asInstanceOf).toString
-        } else {""}
+        } else {
+          ""
+        }
 
-val Seq(curtanty,regretPerVoter, clarity) = data()
+        val Seq(curtanty, regretPerVoter, clarity) = data()
 
         //.runtimeClass.isInstance(
 
@@ -199,8 +201,9 @@ val Seq(curtanty,regretPerVoter, clarity) = data()
     }
   }
 
-  def average( d: Iterable[Double]): Double = d.sum/d.size.toDouble
-  def summery() : String ={
+  def average(d: Iterable[Double]): Double = d.sum / d.size.toDouble
+
+  def summery(): String = {
     f"${average(datas.map(_(0)))}%-40s ${average(datas.map(_(1)))}%-40s ${average(datas.map(_(2)))}%-40s"
   }
 }
@@ -226,13 +229,13 @@ def run(): Unit = {
   //    val e = Plurality(numOptions)
 
   val systems = List(
-    Exhaustive(OptimalGameTheory[numOptions](),numVoters),
-    Exhaustive(InstantRunoffVoting(valueOf[numOptions]),numVoters),
-    Exhaustive(BordaCount(valueOf[numOptions]),numVoters),
+    Exhaustive(OptimalGameTheory[numOptions](), numVoters),
+    Exhaustive(InstantRunoffVoting(valueOf[numOptions]), numVoters),
+    Exhaustive(BordaCount(valueOf[numOptions]), numVoters),
 
-//silly
+    //silly
     //Exhaustive(ProportionallyRandom(valueOf[numOptions]),numVoters),
-//    Exhaustive(Parity(valueOf[numOptions]),numVoters),
+    //    Exhaustive(Parity(valueOf[numOptions]),numVoters),
 
   )
 
@@ -249,23 +252,23 @@ def run(): Unit = {
       println(voter)
     }
 
-    for(system <- systems){
+    for (system <- systems) {
       system.Run(voters).runsystem()
     }
 
 
     val fileWriter = new FileWriter(new File("results.txt"))
     fileWriter.write(s"from $i runs\n")
-    for(system <- systems){
-val s = f"${system.election.getClass.getName}%-100s ${system.summery()}\n"
+    for (system <- systems) {
+      val s = f"${system.election.getClass.getName}%-100s ${system.summery()}\n"
       println(s)
       fileWriter.write(s)
     }
     fileWriter.close();
 
-//    val s = Exhaustive(e, voters)
-//
-//    s.runsystem()
+    //    val s = Exhaustive(e, voters)
+    //
+    //    s.runsystem()
 
     //      val fileWriter = new FileWriter(new File("results.txt"))
     //      println(i)
