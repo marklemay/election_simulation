@@ -43,7 +43,7 @@ trait VoteSystemRestricted[NunCandidates <: Int](using
   def winner(e: Election): Dist[Candidate]
 }
 
-
+// TODO rename https://electowiki.org/wiki/Summability_criterion
 trait VoteSystemFancy extends VoteSystem {
 
   // minimal information that can be collected from any fraction of ballots to detrmine the winner

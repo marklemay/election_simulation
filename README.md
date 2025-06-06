@@ -8,9 +8,9 @@ I made some scripts to simulate elections under different voting systems:
 
 * Instant runoff better reflects voter preference better than plurality when there at 5 candidates
 * Instant runoff and plurality perform about the same with 3 or fewer candidates
-* Approval performed best of the most popular proposed voting systems
-* Rank choice can perform better with different resolution criteria than instant run off
+* Rank choice can perform better with different resolution criteria than instant run off (borda count)
 * all differences were marginal (about a 1 or 2% per voter)
+* Strategic voting can help the outcome better meet elecotrate preferences
 
 raw [results.txt](results.txt).  Sorry for the mess and the bugs.
 
@@ -19,6 +19,7 @@ raw [results.txt](results.txt).  Sorry for the mess and the bugs.
 
 https://chatgpt.com/share/6814eabd-9ac8-8002-9dc3-f868c6a8f13a
 https://chatgpt.com/share/682b314b-32e0-8002-b38a-02033a275d79
+https://chatgpt.com/share/6842ed39-a2f0-8002-9d83-3c40217afe58
 
 
 
@@ -32,7 +33,7 @@ https://www.bostonglobe.com/2025/02/26/opinion/ranked-choice-voting-boston/
 
 
 ## todo
-* optimal single winner preferential voting system based on game theory
 * implement STAR https://www.equal.vote/star
 * citation needed on borda wiki?
-* 
+* does "margin of victory" relate to the marginal ballot in the limit? https://www.usenix.org/legacy/event/evtwote11/tech/final_files/Magrino.pdf
+* better metrics that are indifferent to # candidates and voters

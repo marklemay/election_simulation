@@ -1,4 +1,11 @@
 
+
+from 1987 runs 3 candidates, 7 voters
+VoteSystem.RankChoice.OptimalGameTheory   0.6282244746241501                       0.011952399835950303                     0.006935954641658538
+VoteSystem.RankChoice.InstantRunoffVoting 0.5944539903880172                       0.013497296046164878                     0.007576395045510421
+VoteSystem.RankChoice.BordaCount          0.5894307784723258                       0.013590199224975875                     0.007669714688231398
+
+
 voter=8, candidates=5
 
 from 198 runs

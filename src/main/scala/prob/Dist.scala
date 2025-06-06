@@ -2,6 +2,8 @@ package prob
 
 
 object Dist {
+  def Exactly[A](a: A): Dist[A] = Dist(Map(a -> 1))
+
   def Uniform[A](as: Set[A]): Dist[A] = Dist(as.map(a => (a, 1.0/as.size)).toMap)
 
   def FromCount[A](as: Map[A, Int]): Dist[A] = {
@@ -49,7 +51,28 @@ class Dist [A](val dist: Map[A, Double]) {
   }
   
   def apply(a:A): Double = dist.getOrElse(a,0.0)
-  
-  
+
+
+  // B needs decidable Eq
+  def flatMap[B](f: A => Dist[B]): Dist[B] = {
+    Dist(
+      dist.toSeq.flatMap((a,p) =>f(a).dist.toSeq.map((b,q) => (b,q*p))).groupBy(_._1).map((c, s) => (c, s.map(_._2).sum)).toMap
+    )
+  }
+
+  // B needs decidable Eq
+  //override
+  def map[B](f: A => B): Dist[B] = {
+    Dist(dist.toSeq.map((a,p) => (f(a), p)).groupBy(_._1).map((c, s) => (c, s.map(_._2).sum)).toMap)
+  }
+
+
+
+//  @inline final override def foreach[U](f: A => U): Unit = {
+//    var these = this
+//    while (!these.isEmpty) {
+//      f(these.head)
+//      these = these.tail
+//    }
   
 }

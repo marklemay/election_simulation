@@ -142,11 +142,11 @@ class Exhaustive(val election: VoteSystemWithClarity,
       def summery(): String = {
         val w = election.winner(finalVote)
 
-        val agg = if (election.isInstanceOf[VoteSystemFancy]) {
-          election.asInstanceOf[VoteSystemFancy].aggregate(finalVote.asInstanceOf).toString
-        } else {
-          ""
-        }
+        val agg = election match
+          case fancy: VoteSystemFancy =>
+            fancy.aggregate(finalVote.asInstanceOf).toString
+          case _ =>
+            ""
 
         val Seq(curtanty, regretPerVoter, clarity) = data()
 
